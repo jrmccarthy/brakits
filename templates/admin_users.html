@@ -1,0 +1,19 @@
+<title>Admin Administration</title>
+<body>
+	<h1>Admin Users</h1>
+
+
+	<h3>Current Users:</h3>
+	{% for ad in admins %}
+	<div class="ad_container">
+		<span class="userdata"><label>Username: </label>{{ad.username}}</span><!-- TODO: Delete button that sends an ajax request -->
+	</div>
+	{% endfor %}
+
+	<h3>Add a New User</h3>
+	<form method='POST' action=''>
+		<label for="username">New Username: <input type="text" name="username"/>
+		<label for="password">New Password: <input type="password" name="password"/>
+		<input type="submit" name="submit"/>
+	</form>
+</body>
