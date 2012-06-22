@@ -1,38 +1,87 @@
 <style>
-.match4 img{
-  left:110px;
-  top:200px;
-  position:absolute;
+div .bracket{
+  display: block;
 }
-.match4 span.team1{
-  left:110px;
-  top:180px;
-  position:absolute;
+
+table {
+  display: table;
+  border-collapse: separate;
+  border-spacing: 2px;
 }
-.match4 span.team2{
-  left:110px;
-  top:220px;
-  position:absolute;
+
+table#bracket_table {
+  cellspacing: "0";
+  cellpadding: "0";
+  border-spacing: 0px;
+
 }
+
+tbody {
+  display: table-row-group;
+  vertical-align: middle;
+}
+
+tr {
+  display: table-row;
+  vertical-align: inherit;
+  border-color: inherit;
+}
+
+tr.header-row {
+  text-align: center;
+}
+
+td, th {
+  display: table-cell;
+  vertical-align: inherit;
+}
+
+
+
 </style>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="/static/js/knockout-2.1.0.js"></script>
+<script src="/static/js/knockout-2.1.0.debug.js"></script>
 
   <div data-bind="foreach: matches">
-    <input type="text" data-bind="value: $parent"></input>
-    <h1 data-bind="value: team1"></h1>
-  </div>
-
-
-  <div class='match' data-bind="foreach: matches">
-    <div data-bind="class: _id">
-      <span class='match team1' data-bind="value: $parent.team1">Team1</span>
-      <img src='/static/round_2.png'></img>
-      <span class='match team2' data-bind="value: $parent.team2">Team2</span>
+    <input type="text" data-bind="value: team_1"></input>
+      <h1 data-bind="value: team_1"></h1>
     </div>
   </div>
 
+
+  <!-- <div class='match' data-bind="foreach: matches">
+    <div data-bind="class: _id">
+      <span class='match team_1' data-bind="value: $parent.team_1">Team_1</span>
+      <img src='/static/round_2.png'></img>
+      <span class='match team_2' data-bind="value: $parent.team_2">Team_2</span>
+    </div>
+  </div> -->
+
+  <div id="bracket">
+    <table id="bracket_table">
+      <tbody>
+        <tr class="header-row">
+          <td class="round1">Round 1</td>
+          <td></td>
+          <td class="round1">Round 2</td>
+          <td></td>
+          <td class="round1">Round 3</td>
+          <td></td>
+          <td class="round1">Round 4</td>
+          <td></td>
+          <td class="round1">Round 5</td>
+          <td></td>
+          <td class="round1">Round 6</td>
+          <td></td></tr>
+        <tr class="match-row">
+          <td> </td><!-- Left Blank -->
+          <td rowspan="2"> </td> <!-- Bracket Line -->
+          <td rowspan="2"> </td> <!-- Actual Data -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
 
 
@@ -43,8 +92,8 @@
     var test = ''
     function Match(data) {
         this._id = ko.observable(data._id);
-        this.team1 = ko.observable(data.team1);
-        this.team2 = ko.observable(data.team2);
+        this.team_1 = ko.observable(data.team_1);
+        this.team_2 = ko.observable(data.team_2);
         this.winner = ko.observable(data.winner);
         this.game_time = ko.observable(data.game_time);
         this.round = ko.observable(data.round);
