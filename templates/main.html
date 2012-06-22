@@ -1,0 +1,54 @@
+
+
+
+<html ng-app="main">
+  <head>
+    <script src="http://code.angularjs.org/angular-1.0.0.min.js"></script>
+    <script src="http://code.angularjs.org/angular-resource-1.0.0.min.js"></script>
+  </head>
+  <body>
+    <select name="eventSelect" ngOptions="$scope.events"></select>
+    <hr>
+    <div ng-view></div>
+  </body>
+</html>
+
+<script>
+    function EventSelector($scope) {
+        $scope.events = [];
+
+        $scope.getEvent = function() {
+            alert($scope.selectedEvent)
+        }
+    }
+
+
+    angular.module('main', ['eventListModule']).
+        config(function($routeProvider) {
+            $routeProvider.
+                when('/list', {controller:ListEvents, templateURL:'bracket.html'}).
+                otherwise({redirectTo:'/list'});
+        });
+
+    function ListEvents($scope, eventListItem) {
+        $scope.events = eventListItem.query();
+    }
+
+    angular.module('eventListModule', ['ngResource']).
+        factory('eventListItem', function($resource) {
+            var eventListItem = $resource('/events/:_id',
+                { update: {method: 'PUT'}
+                }
+            
+            );
+
+            eventListItem.prototype.update = function(cb) {
+                return eventListItem.update({id: this._id.$oid},
+                    angular.extend({}, this, {_id:undefined}), cb);
+            }
+            eventListItem.prototype.destroy = function(cb) {
+                return eventListItem.remove({id: this._id.$oid}, cb);
+            }
+            return eventListItem;
+    });
+</script>

@@ -1,0 +1,37 @@
+    <div id="eventSelect">
+      <form data-bind="submit: getEvent">
+        <h2>Select an event</h2>
+        <select data-bind="options: events, optionsText: 'name', optionsValue: '_id', value: selectedEvent"></select>
+        <button type="submit">Get Event</button>
+      </form>
+    </div>
+    <div>
+      You selected:
+      <span data-bind="text: selectedEvent"></span>
+    </div>
+
+
+  <script src="/static/js/knockout-2.1.0.js"></script>
+  <script>
+    function eventlistitem(data){
+        this._id = ko.observable(data._id);
+        this.name = ko.observable(data.name);
+        this.timestamp = ko.observable(data.timestamp);
+    }
+
+    function eventlistModel() {
+        events = ko.observableArray([]);
+        selectedEvent = ko.observable();
+
+        $.getJSON("/event", function(allData) {
+            var mappedData = $.map(allData, function(item) {return new eventlistitem(item) })
+            self.events(mappedData)
+        });
+
+        self.getEvent = function() {
+          alert(selectedEvent())
+          
+        };
+    }
+  ko.applyBindings(new eventlistModel());
+  </script>

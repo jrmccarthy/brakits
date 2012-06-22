@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, session, escape, redirect, url_for
+from flask import Flask, render_template, request, session, escape, redirect, url_for, send_from_directory
 from pymongo import Connection
+import json
 
 
 app = Flask(__name__)
@@ -53,13 +54,20 @@ def create_user():
     return render_template('admin_users.html', admins=admins)
 
 
-@app.route('/user/')
-@app.route('/user/<user_id>')
-def user_profile(user_id=None):
-    if user_id:
-        pass
-    return render_template('user_profile.html', name=user_id)
+# @app.route('/user/')
+# @app.route('/user/<user_id>')
+# def user_profile(user_id=None):
+#     if user_id:
+#         pass
+#     return render_template('user_profile.html', name=user_id)
 
+@app.route('/test')
+def test():
+    return send_from_directory('templates/', 'main.html')
+
+@app.route('/test_ko')
+def test():
+    return send_from_directory('templates/', 'ko.html')
 
 
 '''
@@ -79,11 +87,12 @@ Endpoints we might need include:
     GET  /event/<event_id>/matches/                     : List of all matches and results (including unplayed)
     GET  /event/<event_id>/matches/<match_id>/          : Info about a particular match in the event
     POST /event/<event_id>/matches/                     : Post results of a match or matches
-
-
-
-
 '''
+@app.route('/event')
+@app.route('/event/')
+def event():
+    events = [item for item in db['event'].find(sort=[("timestamp", 1)])]
+    return json.dumps(events)
 
 
 
@@ -96,4 +105,4 @@ Endpoints we might need include:
 
 if __name__ == "__main__":
     app.debug = True
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5001)
