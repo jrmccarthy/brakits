@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, escape, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, session, escape, redirect, url_for, send_from_directory, Response
 from pymongo import Connection
 import json
 
@@ -92,7 +92,13 @@ Endpoints we might need include:
 @app.route('/event/')
 def event():
     events = [item for item in db['event'].find(sort=[("timestamp", 1)])]
-    return json.dumps(events)
+    return Response(json.dumps(events), mimetype='application/json')
+
+@app.route('/matches')
+@app.route('/matches/')
+def matches():
+    matches = [item for item in db['matches'].find(sort=[("_id",1)])]
+    return Response(json.dumps(matches), mimetype='application/json')
 
 
 

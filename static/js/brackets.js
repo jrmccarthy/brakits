@@ -29,22 +29,22 @@ We will have a dropdown on the page initially to select the event, and from ther
 //         event_id = data
 //         return 5
 //     });
+<script>
+    function eventlistitem(data){
+        this._id = ko.observable(data._id)
+        this.name = ko.observable(data.name)
+        this.timestamp = ko.observable(data.timestamp)
+    }
 
-function eventlistitem(data){
-    this._id = ko.observable(data._id)
-    this.name = ko.observable(data.name)
-    this.timestamp = ko.observable(data.timestamp)
-}
+    function eventlistModel() {
+        events = ko.observableArray([])
 
-function eventlistModel() {
-    events = ko.observableArray([])
-
-    $.getJSON("/event", function(allData) {
-        var mappedData = $.map(allData, function(item) {return new eventlistitem(item) })
-        self.events(mappedData)
-    })
-}
-
+        $.getJSON("/event", function(allData) {
+            var mappedData = $.map(allData, function(item) {return new eventlistitem(item) })
+            self.events(mappedData)
+        })
+    }
+</script>
 
 
 

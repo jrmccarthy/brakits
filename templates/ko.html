@@ -1,37 +1,68 @@
-    <div id="eventSelect">
-      <form data-bind="submit: getEvent">
-        <h2>Select an event</h2>
-        <select data-bind="options: events, optionsText: 'name', optionsValue: '_id', value: selectedEvent"></select>
-        <button type="submit">Get Event</button>
-      </form>
-    </div>
-    <div>
-      You selected:
-      <span data-bind="text: selectedEvent"></span>
-    </div>
+<style>
+.match4 img{
+  left:110px;
+  top:200px;
+  position:absolute;
+}
+.match4 span.team1{
+  left:110px;
+  top:180px;
+  position:absolute;
+}
+.match4 span.team2{
+  left:110px;
+  top:220px;
+  position:absolute;
+}
+</style>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="/static/js/knockout-2.1.0.js"></script>
+
+  <div data-bind="foreach: matches">
+    <input type="text" data-bind="value: $parent"></input>
+    <h1 data-bind="value: team1"></h1>
+  </div>
 
 
-  <script src="/static/js/knockout-2.1.0.js"></script>
+  <div class='match' data-bind="foreach: matches">
+    <div data-bind="class: _id">
+      <span class='match team1' data-bind="value: $parent.team1">Team1</span>
+      <img src='/static/round_2.png'></img>
+      <span class='match team2' data-bind="value: $parent.team2">Team2</span>
+    </div>
+  </div>
+
+
+
+
+
+
+
   <script>
-    function eventlistitem(data){
+    var test = ''
+    function Match(data) {
         this._id = ko.observable(data._id);
-        this.name = ko.observable(data.name);
-        this.timestamp = ko.observable(data.timestamp);
+        this.team1 = ko.observable(data.team1);
+        this.team2 = ko.observable(data.team2);
+        this.winner = ko.observable(data.winner);
+        this.game_time = ko.observable(data.game_time);
+        this.round = ko.observable(data.round);
     }
 
-    function eventlistModel() {
-        events = ko.observableArray([]);
-        selectedEvent = ko.observable();
+    function MatchesModel() {
+        var self = this;
+        self.matches = ko.observableArray([]);
 
-        $.getJSON("/event", function(allData) {
-            var mappedData = $.map(allData, function(item) {return new eventlistitem(item) })
-            self.events(mappedData)
+        // $.getJSON("/matches", function(allData) {
+        //     var mappedData = $.map(allData, function(item) {return new Match(item) });
+        //     self.matches(mappedData);
+        // });
+        $.getJSON("/matches", function(allData) {
+            var mappedMatches = $.map(allData, function(item) { return new Match(item) });
+            self.matches(mappedMatches);
+            test = self.matches();
         });
-
-        self.getEvent = function() {
-          alert(selectedEvent())
-          
-        };
     }
-  ko.applyBindings(new eventlistModel());
+    ko.applyBindings(new MatchesModel());
   </script>
