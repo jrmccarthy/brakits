@@ -99,6 +99,14 @@ def event():
 def matches():
     matches = [item for item in db['matches'].find(sort=[("_id",1)])]
     return Response(json.dumps(matches), mimetype='application/json')
+    # ret = {}
+    # for item in matches:
+    #     ret[item['_id']]=({'team_1':item['team_1'],
+    #                    'team_2':item['team_2'],
+    #                    'winner':item['winner'],
+    #                    'game_time':item['game_time'],
+    #                    'round':item['round'] })
+    # return Response(json.dumps(ret), mimetype='application/json')
 
 
 

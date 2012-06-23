@@ -7,13 +7,14 @@ table {
   display: table;
   border-collapse: separate;
   border-spacing: 2px;
+  border-color: red;
 }
 
 table#bracket_table {
   cellspacing: "0";
   cellpadding: "0";
-  border-spacing: 0px;
-
+  border-spacing: 2px;
+  border-color: red;
 }
 
 tbody {
@@ -35,6 +36,13 @@ td, th {
   display: table-cell;
   vertical-align: inherit;
 }
+td {
+  width: 20px;
+  height: 20px;
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+}
 
 
 
@@ -43,52 +51,42 @@ td, th {
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="/static/js/knockout-2.1.0.debug.js"></script>
 
-  <div data-bind="foreach: matches">
-    <input type="text" data-bind="value: team_1"></input>
-      <h1 data-bind="value: team_1"></h1>
-    </div>
+  <div class="hidden-brackets" data-bind="foreach: matches">
+    Match
+    <div data-bind="text: _id, css: { 'myclass':1 }"></div>
+    <div data-bind="text: team_1"></div>
+    <div data-bind="text: team_2"></div>
   </div>
+  <div data-bind="text: matches()[0]"></div>
+  
 
 
-  <!-- <div class='match' data-bind="foreach: matches">
-    <div data-bind="class: _id">
-      <span class='match team_1' data-bind="value: $parent.team_1">Team_1</span>
-      <img src='/static/round_2.png'></img>
-      <span class='match team_2' data-bind="value: $parent.team_2">Team_2</span>
-    </div>
-  </div> -->
-
+  t1
   <div id="bracket">
     <table id="bracket_table">
       <tbody>
-        <tr class="header-row">
-          <td class="round1">Round 1</td>
-          <td></td>
-          <td class="round1">Round 2</td>
-          <td></td>
-          <td class="round1">Round 3</td>
-          <td></td>
-          <td class="round1">Round 4</td>
-          <td></td>
-          <td class="round1">Round 5</td>
-          <td></td>
-          <td class="round1">Round 6</td>
-          <td></td></tr>
-        <tr class="match-row">
-          <td> </td><!-- Left Blank -->
-          <td rowspan="2"> </td> <!-- Bracket Line -->
-          <td rowspan="2"> </td> <!-- Actual Data -->
-        </tr>
+        <tr class="header-row"><td class="round3">Round 1</td> <td></td> <td class="round3">Round 2</td> <td></td> <td class="round3">Round 3</td> <td class="middle"></td> <td class="round3">Round 3</td> <td></td> <td class="round3">Round 2</td> <td></td> <td class="round3">Round 1</td></tr><tr class="match-row"><td>MATCH</td> <td rowspan=2></td> <td rowspan=2>MATCH</td> <td rowspan=4></td> <td rowspan=4>MATCH</td> <td rowspan=4></td> <td rowspan=4>MATCH</td> <td rowspan=4></td> <td rowspan=2>MATCH</td> <td rowspan=2></td> <td>MATCH</td></tr><tr class="match-row"><td>MATCH</td>          <td>MATCH</td></tr>
       </tbody>
     </table>
   </div>
 
 
-
-
-
-
   <script>
+    // ko.observableArray.fn.asDictionary = function (keyName) {
+    //   return ko.computed(function () {
+    //       var list = this() || [];    // the internal array
+    //       var keys = {};              // a place for key/value
+    //       ko.utils.arrayForEach(list, function (v) {
+    //           if (keyName) {          // if there is a key
+    //               keys[v[keyName]] = v;    // use it
+    //           } else {
+    //               keys[v] = v;
+    //           }
+    //       });
+    //       return keys;
+    //   }, this);
+    // };
+
     var test = ''
     function Match(data) {
         this._id = ko.observable(data._id);
@@ -102,16 +100,15 @@ td, th {
     function MatchesModel() {
         var self = this;
         self.matches = ko.observableArray([]);
+        // self.match_dict = this.matches.asDictionary('_id');
 
-        // $.getJSON("/matches", function(allData) {
-        //     var mappedData = $.map(allData, function(item) {return new Match(item) });
-        //     self.matches(mappedData);
-        // });
         $.getJSON("/matches", function(allData) {
             var mappedMatches = $.map(allData, function(item) { return new Match(item) });
             self.matches(mappedMatches);
             test = self.matches();
         });
+
     }
     ko.applyBindings(new MatchesModel());
+
   </script>
