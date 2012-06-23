@@ -30,28 +30,95 @@
 </head>
 <body>
   <header>
+    <style>
+    div .bracket{
+      display: block;
+    }
 
+    table {
+      display: table;
+      border-collapse: separate;
+      border-spacing: 2px;
+      border-color: red;
+    }
+
+    table#bracket_table {
+      cellspacing: "0";
+      cellpadding: "0";
+      border-spacing: 2px;
+      border-color: red;
+    }
+
+    tbody {
+      display: table-row-group;
+      vertical-align: middle;
+    }
+
+    tr {
+      display: table-row;
+      vertical-align: inherit;
+      border-color: inherit;
+    }
+
+    tr.header-row {
+      text-align: center;
+    }
+
+    td, th {
+      display: table-cell;
+      vertical-align: inherit;
+    }
+    td {
+      width: 80px;
+      height: 60px;
+      border-color: black;
+      border-style: solid;
+      border-width: 1px;
+    }
+
+    td span.team1-left {
+      color:red;
+    }   
+    td span.team2-left {
+      color:blue;
+    }
+    td span.team1-right {
+      color:red;
+    }
+    td span.team2-right {
+      color:blue;
+    }
+
+
+
+    </style>
   </header>
 
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="/static/js/knockout-2.1.0.debug.js"></script>
+
+  <div class="hidden-brackets" data-bind="foreach: matches">
+    <div class="match-data" data-bind="attr: {id: class_name()}">
+      <span class="_id" data-bind="text: _id"></span>
+      <span class="team_1" data-bind="text: team_1"></span>
+      <span class="team_2" data-bind="text: team_2"></span>
+      <span class="winner" data-bind="text: winner"></span>
+      <span class="game_time" data-bind="text: game_time"></span>
+    </div>
+  </div>
+  <div class="overall-winner">
+    <span class="winner">Winner Here</span>
+  </div>
 
 
 
 
-
-
-  <div role="main" class="main">
-
-    <html ng-app>
-      <head>
-        <script src="http://code.angularjs.org/angular-1.0.0.min.js"></script>
-      </head>
-      <body>
-        Your name <input type="text" ng-model="yourname" placeholder="World">
-        Hello {{yourname | 'World'}}!
-      </body>
-    </html>
-
-
+  <div id="bracket">
+    <table id="bracket_table">
+      <tbody>
+        {{table|safe}}
+      </tbody>
+    </table>
   </div>
 
 
@@ -65,10 +132,102 @@
 
 
   <!-- JavaScript at the bottom for fast page loading -->
+  <script>
+    // $(".hidden-brackets #match-1")
 
+    var test = ''
+    function Match(data) {
+        this._id = ko.observable(data._id);
+        this.team_1 = ko.observable(data.team_1);
+        this.team_2 = ko.observable(data.team_2);
+        this.winner = ko.observable(data.winner);
+        this.game_time = ko.observable(data.game_time);
+        this.round = ko.observable(data.round);
+        this.class_name = ko.computed(function(){
+          return 'match-' + data._id;
+        })
+    }
+
+    function MatchesModel() {
+        var self = this;
+        self.matches = ko.observableArray([]);
+        // self.match_dict = this.matches.asDictionary('_id');
+
+        $.getJSON("/matches", function(allData) {
+            var mappedMatches = $.map(allData, function(item) { return new Match(item) });
+            self.matches(mappedMatches);
+            test = self.matches();
+        });
+
+    }
+    ko.applyBindings(new MatchesModel());
+
+
+    //This script will populate all our brackets with the data we got earlier from KO.
+    function FindWinners() {
+      $(".hidden-brackets .match-data").each(function(index){
+        var team_1 = $(this).find(".team_1").html().match(/^[0-9]+/);
+        var team_2 = $(this).find(".team_2").html().match(/^[0-9]+/);
+        var winner = $(this).find(".winner").html();
+        if (team_1 != null){
+          //Look for team_1 winner
+          prev_match = $(".hidden-brackets .match-data#match-"+team_1+" .winner").html();
+          // console.log(prev_match)
+          if (prev_match == "1"){
+            // console.log('found one')
+            $(this).find(".team_1").html($(".hidden-brackets .match-data#match-"+team_1+" .team_1").html());
+          }
+          if (prev_match == "2"){
+            // console.log('found one')
+            $(this).find(".team_1").html($(".hidden-brackets .match-data#match-"+team_1+" .team_2").html());
+          }
+        }
+        if (team_2 != null){
+          //Look for team_1 winner
+          prev_match = $(".hidden-brackets .match-data#match-"+team_2+" .winner").html();
+          // console.log(prev_match)
+          if (prev_match == "1"){
+            // console.log('found one')
+            $(this).find(".team_2").html($(".hidden-brackets .match-data#match-"+team_2+" .team_1").html());
+          }
+          if (prev_match == "2"){
+            // console.log('found one')
+            $(this).find(".team_2").html($(".hidden-brackets .match-data#match-"+team_2+" .team_2").html());
+          }
+        }
+      })
+      SetBrackets();
+    }
+
+    function SetBrackets() {
+      $(".hidden-brackets .match-data").each(function(index){
+        var team_1 = $(this).find(".team_1").html().match(/^team([0-9]+)/);
+        var team_2 = $(this).find(".team_2").html().match(/^team([0-9]+)/);
+        var _id = $(this).find("._id").html();
+        if (team_1 != null){
+          team_1 = team_1[1]
+        };
+        if (team_2 != null){
+          team_2 = team_2[1]
+        };
+        var game_time = $(this).find(".game_time").html();
+        var winner = $(this).find(".winner").html();
+        console.log('match ' + _id + ' team1 ' + team_1 + ' team2 ' + team_2)
+        if (team_1 != null) {
+          $("#bracket_table tr.match-row span#match"+_id+'-team1').html(team_1+'</br>')
+        };
+        if (team_2 != null) {
+          $("#bracket_table tr.match-row span#match"+_id+'-team2').html(team_2)
+        };
+      });
+    }
+
+    $(document).ready(function() {
+      SetBrackets();
+    });
+  </script>
   <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script src="static/js/angular-1.0.0.min.js"></script>
 
 </body>
 </html>

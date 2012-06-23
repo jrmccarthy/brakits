@@ -52,16 +52,17 @@ td {
 <script src="/static/js/knockout-2.1.0.debug.js"></script>
 
   <div class="hidden-brackets" data-bind="foreach: matches">
-    Match
-    <div data-bind="text: _id, css: { 'myclass':1 }"></div>
-    <div data-bind="text: team_1"></div>
-    <div data-bind="text: team_2"></div>
+    <div class="match-data" data-bind="attr: {id: class_name()}">
+      <span class="team_1" data-bind="text: team_1"></span>
+      <span class="team_2" data-bind="text: team_2"></span>
+      <span class="winner" data-bind="text: winner"></span>
+      <span class="game_time" data-bind="text: game_time"></span>
+    </div>
   </div>
-  <div data-bind="text: matches()[0]"></div>
   
 
 
-  t1
+  
   <div id="bracket">
     <table id="bracket_table">
       <tbody>
@@ -72,20 +73,7 @@ td {
 
 
   <script>
-    // ko.observableArray.fn.asDictionary = function (keyName) {
-    //   return ko.computed(function () {
-    //       var list = this() || [];    // the internal array
-    //       var keys = {};              // a place for key/value
-    //       ko.utils.arrayForEach(list, function (v) {
-    //           if (keyName) {          // if there is a key
-    //               keys[v[keyName]] = v;    // use it
-    //           } else {
-    //               keys[v] = v;
-    //           }
-    //       });
-    //       return keys;
-    //   }, this);
-    // };
+    // $(".hidden-brackets #match-1")
 
     var test = ''
     function Match(data) {
@@ -95,6 +83,9 @@ td {
         this.winner = ko.observable(data.winner);
         this.game_time = ko.observable(data.game_time);
         this.round = ko.observable(data.round);
+        this.class_name = ko.computed(function(){
+          return 'match-' + data._id;
+        })
     }
 
     function MatchesModel() {

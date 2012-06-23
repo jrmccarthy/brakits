@@ -10,14 +10,14 @@
     {
         "_id":2,
         "team_1":4,
-        "team_2":5,
+        "team_2":6,
         "winner":0,
         "game_time":"",
         "round":2
     },
     {
         "_id":3,
-        "team_1":6,
+        "team_1":5,
         "team_2":7,
         "winner":0,
         "game_time":"",

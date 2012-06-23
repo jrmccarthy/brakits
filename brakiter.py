@@ -50,21 +50,22 @@ def generate_brackets(team_list, match_list=None):
             left_cell = ''
             right_cell = ''
             #Add a span for team 1
-            left_cell += '<span id="left-r%s-match%s-team1" data-bind="ms.%s.team1"></span>' % (cur_rd, match_id, match_id)
-            left_cell += '<span id="left-r%s-match%s-team2" data-bind="ms.%s.team2"></span>' % (cur_rd, match_id, match_id)
+            left_cell += '<span class="team1-left" id="match%s-team1"></span>' % (match_id)
+            if cur_rd != num_rounds:
+                left_cell += '<span class="team2-left" id="match%s-team2"></span>' % (match_id)
+                left_cell += '<span class="winner-left" id="match%s-winner"></span>' % (match_id)
+                match_id +=1
+            right_cell += '<span class="team2-right" id="match%s-team2"></span>' % (match_id)
+            if cur_rd != num_rounds:
+                right_cell = '<span class="team1-right" id="match%s-team1"></span>' % (match_id) + right_cell
+                right_cell += '<span class="winner-right" id="match%s-winner"></span>' % (match_id)
             match_id +=1
-            right_cell += '<span id="right-r%s-match%s-team1" data-bind="ms.%s.team1"></span>' % (cur_rd, match_id, match_id)
-            right_cell += '<span id="right-r%s-match%s-team2" data-bind="ms.%s.team2"></span>' % (cur_rd, match_id, match_id)
-            if cur_rd == num_rounds:
-                #Need to build special cells for this one
+            if col_h == 1:
+                table[j][i] = '<td>%s</td>' % left_cell
+                table[j][t_width-1-i] = '<td>%s</td>' % right_cell
+            else:
                 table[j][i] = '<td rowspan=%s>%s</td>' % (col_h, left_cell)
                 table[j][t_width-1-i] = '<td rowspan=%s>%s</td>' % (col_h, right_cell)
-            else col_h == 1:
-                table[j][i] = '<td>MATCH</td>'
-                table[j][t_width-1-i] = '<td>MATCH</td>'
-            else:
-                table[j][i] = '<td rowspan=%s>MATCH</td>' % col_h
-                table[j][t_width-1-i] = '<td rowspan=%s>MATCH</td>' % col_h
         cur_rd = cur_rd-1
     cur_rd = num_rounds
     #Build the spaces/lines that connect each round/bracket

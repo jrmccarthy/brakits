@@ -108,7 +108,14 @@ def matches():
     #                    'round':item['round'] })
     # return Response(json.dumps(ret), mimetype='application/json')
 
-
+@app.route('/tourney')
+@app.route('/tourney/')
+def tourney():
+    import brakiter
+    matches = [item for item in db['matches'].find(sort=[("_id",1)])]
+    teams = [item for item in db['teams'].find(sort=[("_id",1)])]
+    table = brakiter.generate_brackets(teams)
+    return render_template('brackets.html', table=table)
 
 
 
