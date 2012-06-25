@@ -53,6 +53,7 @@
       cellpadding: "0";
       border-spacing: 0px;
       border-color: red;
+      width:1660px;
     }
 
     tbody {
@@ -68,6 +69,8 @@
 
     tr.header-row {
       text-align: center;
+      font-size: 150%;
+      background-color: silver;
     }
 
     td, th {
@@ -121,6 +124,10 @@
       vertical-align: middle;
       background: url('/static/images/trans-match-right.png') no-repeat center;
     }
+    td.filler-col.left-last, td.filler-col.right-last {
+      background: url('/static/images/connector-1-left.png') no-repeat center;
+    }
+
     td.filler-col.left-2 {
       background: url('/static/images/connector-2-left.png') no-repeat center;
     }
@@ -128,9 +135,29 @@
       background: url('/static/images/connector-2-right.png') no-repeat center;
     }
 
-    td.filler-col.left-last, td.filler-col.right-last {
-      background: url('/static/images/connector-1-left.png') no-repeat center;
     }
+    
+    td.filler-col.left-4 {
+      background: url('/static/images/connector-4-left.png') no-repeat center;
+    }
+    td.filler-col.right-4 {
+      background: url('/static/images/connector-4-right.png') no-repeat center;
+    }
+/*
+    td.filler-col.left-8 {
+      background: url('/static/images/connector-8-left.png') no-repeat center;
+    }
+    td.filler-col.right-8 {
+      background: url('/static/images/connector-8-right.png') no-repeat center;
+    }
+
+    td.filler-col.left-16 {
+      background: url('/static/images/connector-16-left.png') no-repeat center;
+    }
+    td.filler-col.right-16 {
+      background: url('/static/images/connector-16-right.png') no-repeat center;
+    }*/
+
 
 
 
@@ -166,6 +193,9 @@
       left: 20px;
       color:blue;
     }
+    div .next_match span {
+      font-size: 150%;
+    }
 
 
 
@@ -175,9 +205,9 @@
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="/static/js/knockout-2.1.0.debug.js"></script>
 
-  <div class="hidden-teams">
+  <div class="hidden-teams" style="display:none;">
     {%for team in teams%}
-      <div class="team-data">
+      <div class="team-data" id="team{{team._id}}">
         <span class="_id">{{team._id}}</span>
         <span class="p1_nickname">{{team.p1_nickname}}</span>
         <span class="p1_first_name">{{team.p1_first_name}}</span>
@@ -190,17 +220,37 @@
     {% endfor %}
   </div>
 
-  <div class="hidden-brackets" data-bind="foreach: matches">
+  <div class="next_match">
+    <h2>NEXT MATCH TIME:</h2>
+    <span id="next-match"></span></br>
+    <span id="next-team1"></span>
+    <span> VS. </span>
+    <span id="next-team2"></span>
+  </br></br></br>
+  </div>
+
+  {% if admin %}
+    <div id="add_result">
+      <input type="text" name="match_id" id="apply_match_id">Match: </input>
+      <input type="text" name="winner" id="apply_match_winner">Winner: </input>
+      <button onclick="ApplyResult()"></button>
+    </div>
+  {% endif %}
+  
+
+  <div class="hidden-brackets" data-bind="foreach: matches" style="display:none;">
     <div class="match-data" data-bind="attr: {id: class_name()}">
       <span class="_id" data-bind="text: _id"></span>
       <span class="team_1" data-bind="text: team_1"></span>
       <span class="team_2" data-bind="text: team_2"></span>
+      <span class="team_1_name"></span>
+      <span class="team_2_name"></span>
       <span class="winner" data-bind="text: winner"></span>
       <span class="game_time" data-bind="text: game_time"></span>
     </div>
   </div>
   <div class="overall-winner">
-    <span class="winner">Winner Here</span>
+    <span class="winner"></span>
   </div>
 
 
@@ -244,27 +294,127 @@
     function MatchesModel() {
         var self = this;
         self.matches = ko.observableArray([]);
+        self.next_match = ko.observable();
         // self.match_dict = this.matches.asDictionary('_id');
+
+        self.updateNext = function() {
+          now = new Date();
+          next = new Date('2025-01-01 12:00:00');
+          var team1 = null;
+          var team2 = null;
+          ko.utils.arrayForEach(self.matches(), function(match) {
+            g_date = new Date(match.game_time());
+            if (g_date < next && g_date > now) {
+              next = g_date;
+              team1 = $(".hidden-teams #team"+match.team_1().toString().match(/[0-9]+/) + " .team_name");
+              team2 = $(".hidden-teams #team"+match.team_2().toString().match(/[0-9]+/) + " .team_name");
+              console.log('teams ', team1, team2);
+              // team2 = match.team_2()
+            };
+          });
+          $("#next-match").html(next.toString());
+          $("#next-team1").html(team1)
+          $("#next-team2").html(team2)
+        }
 
         $.getJSON("/matches", function(allData) {
             var mappedMatches = $.map(allData, function(item) { return new Match(item) });
             self.matches(mappedMatches);
             test = self.matches();
+            $(".hidden-brackets .match-data").each(function(index){
+              var t1_name = $(".hidden-teams #team"+$(this).find(".team_1").html()+" .team_name").html();
+              $(this).find(".team_1_name").html(t1_name);
+              var t2_name = $(".hidden-teams #team"+$(this).find(".team_2").html()+" .team_name").html();
+              $(this).find(".team_2_name").html(t2_name);
+              // console.log("Set teams: " + $(this).find(".team_1_name").html() + "; " + $(this).find(".team_2_name").html())
+            });
             SetBrackets();
+            self.updateNext();
+            HideCrap();
         });
+
 
     }
     ko.applyBindings(new MatchesModel());
 
-    function RunTourney() {
-      $(".hidden-brackets .match-data#match-1 .winner").html("1")
-      $(".hidden-brackets .match-data#match-2 .winner").html("1")
-      $(".hidden-brackets .match-data#match-3 .winner").html("1")
-      $(".hidden-brackets .match-data#match-4 .winner").html("1")
-      $(".hidden-brackets .match-data#match-5 .winner").html("1")
-      $(".hidden-brackets .match-data#match-6 .winner").html("1")
-      $(".hidden-brackets .match-data#match-7 .winner").html("1")
+    function ApplyResult() {
+      match_id = $("#apply_match_id").val();
+      winner = $("#apply_match_winner").val();
+      console.log(".hidden-brackets .match-data#match-"+match_id+" .winner")
+      $(".hidden-brackets .match-data#match-"+match_id+" .winner").html(winner);
+      FindWinners();
     }
+
+    {
+      function HideCrap() {
+        //Stupid hide function wasn't working, so lets just hide the crap ones for now
+        $(".match-cell span#match32-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match33-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match36-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match37-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match38-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match39-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match40-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match41-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match42-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match43-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match44-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match45-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match46-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match47-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match48-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match49-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match50-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match52-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match53-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match54-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match55-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match56-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match57-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match58-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match59-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match60-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match61-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match62-team1").parent().css('visibility', "hidden").css('background', 'none');
+        $(".match-cell span#match63-team1").parent().css('visibility', "hidden").css('background', 'none');
+
+
+      }
+    }
+    // function HideCells() {
+    //   $(".match-cell").each(function(index){
+    //     $(this).hide();
+    //   });
+    //   $(".hidden-brackets .match-data").each(function(index){
+    //     console.log("showing ", $(this));
+    //     $(".match-cell span#match"+ $(this).find("._id").html() +"-team1").parent().show();
+    //   })
+
+    //   // $(".match-cell").each(function(index){
+    //   //   var s = this;
+    //   //   var spandata = null
+    //   //   $(s).find("span").each(function(indexinside){
+    //   //     console.log(this)
+    //   //     if ($(this).html() != null && $(this).html() != ""){
+    //   //       spandata = $(this).html();
+    //   //     }
+    //   //   })
+    //     // if (spandata == null) {
+    //       // console.log('hiding: ', $(s))
+    //       // $(s).hide();
+    //     // }
+    //   // })
+    // }
+
+    // function RunTourney() {
+    //   $(".hidden-brackets .match-data#match-1 .winner").html("1")
+    //   $(".hidden-brackets .match-data#match-2 .winner").html("1")
+    //   $(".hidden-brackets .match-data#match-3 .winner").html("1")
+    //   $(".hidden-brackets .match-data#match-4 .winner").html("1")
+    //   $(".hidden-brackets .match-data#match-5 .winner").html("1")
+    //   $(".hidden-brackets .match-data#match-6 .winner").html("1")
+    //   $(".hidden-brackets .match-data#match-7 .winner").html("1")
+    // }
 
     //This script will populate all our brackets with the data we got earlier from KO.
     function FindWinners() {
@@ -323,21 +473,31 @@
         var team_2 = $(this).find(".team_2").html().match(/^team([0-9]+)/);
         var _id = $(this).find("._id").html();
         if (team_1 != null){
+          // console.log('t1', $(this).find(".team_1_name").html())
+          team_1_name = $(this).find(".team_1_name").html()
           team_1 = team_1[1]
         };
         if (team_2 != null){
+          // console.log('t2', $(this))
+          team_2_name = $(this).find(".team_1_name").html()
           team_2 = team_2[1]
         };
         var game_time = $(this).find(".game_time").html();
         var winner = $(this).find(".winner").html();
-        console.log('match ' + _id + ' team1 ' + team_1 + ' team2 ' + team_2)
+        // console.log('match ' + _id + ' team1 ' + team_1 + ' team2 ' + team_2)
         if (team_1 != null) {
           $("#bracket_table tr.match-row span#match"+_id+'-team1').html(team_1+'</br>')
         };
         if (team_2 != null) {
-          $("#bracket_table tr.match-row span#match"+_id+'-team2').html(team_2)
+          $("#bracket_table tr.match-row span#match"+_id+'-team2').html(team_2+'</br>')
         };
       });
+
+      $("#bracket_table tr.match-row td.match-cell").each(function(index){
+        var data = $(this).html()
+        // console.log(index);
+        // console.log(data);
+      })
     }
 
   </script>

@@ -112,10 +112,13 @@ def matches():
 @app.route('/tourney/')
 def tourney():
     import brakiter
+    admin = False
+    if 'username' in session:
+        admin = True
     matches = [item for item in db['matches'].find(sort=[("_id",1)])]
     teams = [item for item in db['teams'].find(sort=[("_id",1)])]
     table = brakiter.generate_brackets(teams)
-    return render_template('brackets.html', table=table, teams=teams)
+    return render_template('brackets.html', table=table, teams=teams, admin=admin)
 
 
 
