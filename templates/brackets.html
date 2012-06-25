@@ -12,6 +12,8 @@
        More info: h5bp.com/i/378 -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
+  <meta http-equiv="refresh" content="60"/>
+
   <title>Brackets</title>
   <meta name="description" content="">
 
@@ -117,7 +119,7 @@
       height: 60px;
       vertical-align: middle;
       background: url('/static/images/trans-match.png') no-repeat center;
-      background-size: 75% auto;
+      background-size: 120px 60px;
     }
 
     td.match-cell.right-cell {
@@ -125,13 +127,13 @@
       height: 60px;
       vertical-align: middle;
       background: url('/static/images/trans-match-right.png') no-repeat center;
-      background-size: 75% auto;
+      background-size: 120px 60px;
     }
     td.filler-col.left-last, td.filler-col.right-last {
       background: url('/static/images/connector-1-left.png') no-repeat center;
     }
 
-/*    td.filler-col.left-2 {
+   /* td.filler-col.left-2 {
       background: url('/static/images/connector-2-left.png') no-repeat center;
     }
     td.filler-col.right-2 {
@@ -332,6 +334,7 @@
               // console.log("Set teams: " + $(this).find(".team_1_name").html() + "; " + $(this).find(".team_2_name").html())
             });
             SetBrackets();
+            FindWinners();
             self.updateNext();
             HideCrap();
         });
