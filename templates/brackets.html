@@ -54,6 +54,7 @@
       border-spacing: 0px;
       border-color: red;
       width:1660px;
+      height: ;
     }
 
     tbody {
@@ -107,42 +108,44 @@
     td.last-match span.team2-right {
       position: relative;
       top: 0px !important;
-      left: 20px !important;
+      left: 30px !important;
       color: green !important;
     }
 
     td.match-cell.left-cell {
       width: 120px;
-      height: 80px;
+      height: 60px;
       vertical-align: middle;
       background: url('/static/images/trans-match.png') no-repeat center;
+      background-size: 75% auto;
     }
 
     td.match-cell.right-cell {
       width: 120px;
-      height: 80px;
+      height: 60px;
       vertical-align: middle;
       background: url('/static/images/trans-match-right.png') no-repeat center;
+      background-size: 75% auto;
     }
     td.filler-col.left-last, td.filler-col.right-last {
       background: url('/static/images/connector-1-left.png') no-repeat center;
     }
 
-    td.filler-col.left-2 {
+/*    td.filler-col.left-2 {
       background: url('/static/images/connector-2-left.png') no-repeat center;
     }
     td.filler-col.right-2 {
       background: url('/static/images/connector-2-right.png') no-repeat center;
-    }
+    }*/
 
-    }
     
-    td.filler-col.left-4 {
+    
+/*    td.filler-col.left-4 {
       background: url('/static/images/connector-4-left.png') no-repeat center;
     }
     td.filler-col.right-4 {
       background: url('/static/images/connector-4-right.png') no-repeat center;
-    }
+    }*/
 /*
     td.filler-col.left-8 {
       background: url('/static/images/connector-8-left.png') no-repeat center;
@@ -171,26 +174,26 @@
 
     td span.team1-left {
       position: relative;
-      top: -10px;
-      left: 10px;
+      top: -8px;
+      left: 50px;
       color:red;
     }   
     td span.team2-left {
       position: relative;
-      top:10px;
-      left: 10px;
+      top:8px;
+      left: 50px;
       color:blue;
     }
     td span.team1-right {
       position: relative;
-      top: -10px;
-      left: 20px;
+      top: -8px;
+      left: 55px;
       color:red;
     }
     td span.team2-right {
       position: relative;
-      top: 10px;
-      left: 20px;
+      top: 8px;
+      left: 55px;
       color:blue;
     }
     div .next_match span {
@@ -220,14 +223,14 @@
     {% endfor %}
   </div>
 
-  <div class="next_match">
+ <!--  <div class="next_match">
     <h2>NEXT MATCH TIME:</h2>
     <span id="next-match" style="color: red;"></span></br>
     <span id="next-team1" style="font-size:125%;"></span>
     <span> VS. </span>
     <span id="next-team2" style="font-size:125%;"></span>
   </br></br></br>
-  </div>
+  </div> -->
 
   {% if admin %}
     <div id="add_result">
