@@ -309,11 +309,12 @@
           var team2 = null;
           ko.utils.arrayForEach(self.matches(), function(match) {
             g_date = new Date(match.game_time());
-            if (g_date < next && g_date > now) {
+            var winner = $(".hidden-brackets .match-data#match-"+match._id()+" .winner").html()
+            if (g_date < next && g_date > now && winner == "0") {
               next = g_date;
               team1 = $(".hidden-teams #team"+match.team_1().toString().match(/[0-9]+/) + " .team_name");
               team2 = $(".hidden-teams #team"+match.team_2().toString().match(/[0-9]+/) + " .team_name");
-              console.log('teams ', team1, team2);
+              console.log('teams ', team1, team2, ' time: ', g_date, ' winner: ', match.winner(), ' _id ', match._id());
               // team2 = match.team_2()
             };
           });
@@ -341,7 +342,8 @@
 
 
     }
-    ko.applyBindings(new MatchesModel());
+    var matchesMod = new MatchesModel();
+    ko.applyBindings(matchesMod);
 
     function ApplyResult() {
       match_id = $("#apply_match_id").val();
@@ -349,6 +351,7 @@
       console.log(".hidden-brackets .match-data#match-"+match_id+" .winner")
       $(".hidden-brackets .match-data#match-"+match_id+" .winner").html(winner);
       FindWinners();
+      matchesMod.updateNext();
     }
 
     {
