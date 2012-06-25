@@ -39,8 +39,10 @@ def generate_brackets(team_list, match_list=None):
     #Build the tourney grid
     cur_rd = num_rounds
     match_id = 1
+    max_h = pow(2, num_rounds-1) / 2
     for i in range(middle-1,-1, -2):
         col_h = pow(2, cur_rd-1)
+        
         # print 'col_h: ', col_h
         num_elements = pow(2, num_rounds-1) / col_h
         # print 'num_elements: ',num_elements
@@ -61,11 +63,14 @@ def generate_brackets(team_list, match_list=None):
                 right_cell += '<span class="winner-right" id="match%s-winner"></span>' % (match_id)
             match_id +=1
             if col_h == 1:
-                table[j][i] = '<td>%s</td>' % left_cell
-                table[j][t_width-1-i] = '<td>%s</td>' % right_cell
+                table[j][i] = '<td class="match-cell left-cell">%s</td>' % left_cell
+                table[j][t_width-1-i] = '<td class="match-cell right-cell">%s</td>' % right_cell
+            elif col_h == pow(2, num_rounds-1):
+                table[j][i] = '<td class="match-cell left-cell last-match" rowspan=%s>%s</td>' % (max_h, left_cell)
+                table[j][t_width-1-i] = '<td class="match-cell right-cell last-match" rowspan=%s>%s</td>' % (max_h, right_cell)
             else:
-                table[j][i] = '<td rowspan=%s>%s</td>' % (col_h, left_cell)
-                table[j][t_width-1-i] = '<td rowspan=%s>%s</td>' % (col_h, right_cell)
+                table[j][i] = '<td class="match-cell left-cell" rowspan=%s>%s</td>' % (col_h, left_cell)
+                table[j][t_width-1-i] = '<td class="match-cell right-cell" rowspan=%s>%s</td>' % (col_h, right_cell)
         cur_rd = cur_rd-1
     cur_rd = num_rounds
     #Build the spaces/lines that connect each round/bracket
@@ -74,16 +79,19 @@ def generate_brackets(team_list, match_list=None):
         num_elements = pow(2, num_rounds-1) / col_h
         for j in range(1, len(table), col_h):
             if col_h == 1:
-                table[j][i] = '<td></td>'
-                table[j][t_width-1-i] = '<td></td>'
+                table[j][i] = '<td class="filler-col left-cell left-1"></td>'
+                table[j][t_width-1-i] = '<td class="filler-col right-cell right-1"></td>'
+            elif col_h == pow(2, num_rounds-1):
+                table[j][i] = '<td class="filler-col left-cell left-last" rowspan=%s></td>' % (max_h)
+                table[j][t_width-1-i] = '<td class="filler-col right-cell right-last" rowspan=%s></td>' % (max_h)
             else:
-                table[j][i] = '<td rowspan=%s></td>' % col_h
-                table[j][t_width-1-i] = '<td rowspan=%s></td>' % col_h
+                table[j][i] = '<td class="filler-col left-cell left-%s" rowspan=%s></td>' % (col_h, col_h)
+                table[j][t_width-1-i] = '<td class="filler-col right-cell right-%s" rowspan=%s></td>' % (col_h, col_h)
         cur_rd = cur_rd-1
     #Middle row
     col_h = pow(2, num_rounds-1)
     for j in range(1, len(table), col_h):
-        table[j][middle] = '<td rowspan=%s></td>' % col_h
+        table[j][middle] = '<td class="middle-col" rowspan=%s></td>' % max_h
 
 
     print_table = ''
