@@ -117,7 +117,7 @@
       height: 60px;
       vertical-align: middle;
       background: url('/static/images/trans-match.png') no-repeat center;
-      background-size: 75% auto;
+      background-size: 120px 60px;
     }
 
     td.match-cell.right-cell {
@@ -125,7 +125,7 @@
       height: 60px;
       vertical-align: middle;
       background: url('/static/images/trans-match-right.png') no-repeat center;
-      background-size: 75% auto;
+      background-size: 120px 60px;
     }
     td.filler-col.left-last, td.filler-col.right-last {
       background: url('/static/images/connector-1-left.png') no-repeat center;
@@ -164,7 +164,7 @@
 
 
 
-    td.filler-col {
+     td.filler-col {
       width: 20px;
     }
     td.middle-col {
@@ -333,6 +333,7 @@
               // console.log("Set teams: " + $(this).find(".team_1_name").html() + "; " + $(this).find(".team_2_name").html())
             });
             SetBrackets();
+            FindWinners();
             self.updateNext();
             HideCrap();
         });
